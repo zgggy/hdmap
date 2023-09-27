@@ -1,0 +1,32 @@
+{
+  "/": "地图格式",
+  "road1": {
+    "traj": {
+      "seg1": {
+        "startpoint": { "x": "", "y": "", "theta": "", "curvature": "" },
+        "para": { "length": "", "dk": "" }
+      },
+      "seg2": {}
+    },
+    "/": "section1 : starts, ends, group1, group2 ........."
+  },
+  "road2": "",
+  "road3": "",
+  "boundary1": {
+    "traj": {
+      "seg1": {
+        "startpoint": {
+          "x": "",
+          "y": "",
+          "theta": "",
+          "curvature": ""
+        },
+        "para": {
+          "length": "",
+          "dk": ""
+        }
+      },
+      "/": "seg2"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>hdmap</name>
+    <version>0.0.0</version>
+    <description>The hdmap package</description>
+    <maintainer email="zgy@foxmail.com">zgy</maintainer>
+    <maintainer email="zgy@foxmail.com">llf</maintainer>
+    <author email="zgy@foxmail.com"> ZhangGuangyan </author>
+
+    <license>BSD 2-Clause "Simplified" License</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+</package>
