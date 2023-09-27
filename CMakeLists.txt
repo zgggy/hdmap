@@ -10,24 +10,11 @@ find_package(catkin REQUIRED COMPONENTS)
 
 set(HDMAP_LIB_NAME "hdmap_lib")
 
-# catkin_package(
-#    INCLUDE_DIRS
-#      ./
-#    LIBRARIES
-#      ${HDMAP_LIB_NAME}
-# )
-
-include(
-    hdmap.h
-)
-
 include_directories(
     /usr/include/eigen3
-    clothoids_wrapper/include
+    ../clothoids_wrapper/include
     ${catkin_INCLUDE_DIRS}
 )
-
-add_subdirectory(clothoids_wrapper)
 
 add_library(${HDMAP_LIB_NAME}
     src/map/boundary.cc 
