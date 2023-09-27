@@ -10,9 +10,11 @@ find_package(catkin REQUIRED COMPONENTS)
 
 set(HDMAP_LIB_NAME "hdmap_lib")
 
+add_subdirectory(depends/clothoids_wrapper)
+
 include_directories(
     /usr/include/eigen3
-    ../clothoids_wrapper/include
+    depends/clothoids_wrapper/include
     ${catkin_INCLUDE_DIRS}
 )
 
@@ -36,8 +38,20 @@ target_link_libraries(${HDMAP_LIB_NAME}
     clothoids_utils
 )
 
-install(TARGETS ${HDMAP_LIB_NAME}
-    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+# install(TARGETS 
+#             ${HDMAP_LIB_NAME}
+#             ${CLOTHOIDS_MAIN_LIBRARY_NAME}
+#             ${CLOTHOIDS_UTILS_LIBRARY_NAME}
+#             ${CLOTHOIDS_QUARTIC_ROOTS_FLOCKE_LIBRARY_NAME}
+#     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
+
+# install(FILE hdmap.h
+#     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+# )
+
+# install(DIRECTORY depends/clothoids_wrapper/include/${PROJECT_NAME}/
+#         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+# )

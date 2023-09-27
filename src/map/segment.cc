@@ -21,7 +21,7 @@ Segment::Segment(int type, planner::Point start, planner::Point end) : start_(st
 Segment::Segment(planner::Point start, double dk, double s) : start_(start) {
     spiral_.build(start.x, start.y, start.theta(), start.c, dk, s);
     length_ = spiral_.length();
-    end_    = planner::Point{spiral_.xEnd(), spiral_.yEnd(), spiral.thetaEnd(), spiral_.kappaEnd()};
+    end_    = planner::Point(spiral_.xEnd(), spiral_.yEnd(), spiral_.thetaEnd(), spiral_.kappaEnd());
     if (start.c == 0.0 && dk == 0.0) {
         type_ = LINE;
     } else {
