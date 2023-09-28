@@ -1,9 +1,28 @@
 # HDMAP
 
-```CMake
+## CMakeLists
 
+to use this lib, write at least these 3 statements:  
+
+```CMake
+add_compile_options(
+    -std=c++17 # for new future of c++
+    -fconcepts # for auto paremeters in lambda
+)
+
+include(hdmap/CMakeLists.include)
+
+target_link_libraries(${PROJECT_NAME}
+    # other libs
+    hdmap_lib # required!!!
+)
+```  
+
+a sample:  
+
+```CMake
 cmake_minimum_required(VERSION 3.0.2)
-project(hdmap)
+project(node)
 
 add_compile_options(
     -std=c++17 # for new future of c++
@@ -12,52 +31,43 @@ add_compile_options(
 
 find_package(catkin REQUIRED COMPONENTS)
 
-set(HDMAP_LIB_NAME "hdmap_lib")
+include(hdmap/CMakeLists.include)
 
-add_subdirectory(depends/clothoids_wrapper)
-
-include_directories(
-    /usr/include/eigen3
-    depends/clothoids_wrapper/include
-    ${catkin_INCLUDE_DIRS}
+add_executable(node
+    main.cc
 )
 
-add_library(${HDMAP_LIB_NAME}
-    src/map/boundary.cc 
-    src/map/lane.cc 
-    src/map/map.cc 
-    src/map/road.cc 
-    src/map/segment.cc
-    src/map/trajectory.cc
-    src/routing/astar.cc
-    src/routing/dijkstra.cc
-    src/topograph/pathnode.cc
-    src/topograph/topograph.cc
-)
-
-target_link_libraries(${HDMAP_LIB_NAME}
+target_link_libraries(${PROJECT_NAME}
     ${catkin_LIBRARIES}
-    clothoids_main
-    clothoids_quartic_roots_flocke
-    clothoids_utils
+    hdmap_lib
 )
+```
 
-# install(TARGETS 
-#             ${HDMAP_LIB_NAME}
-#             ${CLOTHOIDS_MAIN_LIBRARY_NAME}
-#             ${CLOTHOIDS_UTILS_LIBRARY_NAME}
-#             ${CLOTHOIDS_QUARTIC_ROOTS_FLOCKE_LIBRARY_NAME}
-#     ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+## C++
 
-# install(FILE hdmap.h
-#     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-# )
+just  `#include <hdmap.h>` and instantiate them by `shared_ptr`(suggested), a sample:  
 
-# install(DIRECTORY depends/clothoids_wrapper/include/${PROJECT_NAME}/
-#         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-# )
+```cpp
+#include <hdmap.h>
 
+#include <memory>
+
+using hdmap::Map, hdmap::Segment, hdmap::BaseLane, hdmap::Lane;
+
+int main() {
+    auto map = std::make_shared<Map>();
+    map->AddRoad(0);
+    map->roads_[0]->Reference(
+        Segment(Segment::SEGMENT_TYPE::CLOTHOID, planner::Point{0, 0, 0, 0}, planner::Point{2000, 0, 0, 0}));
+    map->AddLane(0, 0, 0, {0}, BaseLane::PARAMETER_TYPE::F);
+
+    auto topo = std::make_shared<hdmap::TopoGraph>(map);
+    topo->SetStartAndEndNode(Lane::LaneID{0, 1, 1, 0}, 9, Lane::LaneID{0, 2, 0, 2}, 19);
+    topo->UpdateTopoGraph();
+    topo->Print();
+    auto navi        = std::make_shared<hdmap::Routing>(hdmap::Routing::METHOD::DIJKSTRA, topo);
+    auto traj        = navi->GlobalRefTraj();
+    auto sample_traj = traj.SampleTraj(0.1);
+    for (auto sample : sample_traj) std::cout << sample.x << " " << sample.y << std::endl;
+}
 ```
