@@ -38,7 +38,7 @@ void Map::AddSolid(int road_id, int section_num, double mid_part, std::initializ
     solids_.emplace(solid->id_, solid);
 }
 
-auto Map::AtRoad(planner::SimpPoint point) -> tuple<int, double> {
+auto Map::AtRoad(SimpPoint point) -> tuple<int, double> {
     auto nearest_id   = int{-1};
     auto nearest_s    = double{-1};
     auto min_distance = MAXFLOAT;
@@ -54,7 +54,7 @@ auto Map::AtRoad(planner::SimpPoint point) -> tuple<int, double> {
     return make_tuple(nearest_id, nearest_s);
 }
 
-auto Map::AtRoutingRoad(planner::SimpPoint point, vector<int> road_id_set) -> tuple<int, double> {
+auto Map::AtRoutingRoad(SimpPoint point, vector<int> road_id_set) -> tuple<int, double> {
     auto nearest_id   = int{-1};
     auto nearest_s    = double{-1};
     auto min_distance = MAXFLOAT;
@@ -70,12 +70,12 @@ auto Map::AtRoutingRoad(planner::SimpPoint point, vector<int> road_id_set) -> tu
     return make_tuple(nearest_id, nearest_s);
 }
 
-auto Map::AtRoadPtr(planner::SimpPoint point) -> std::shared_ptr<Road> {
+auto Map::AtRoadPtr(SimpPoint point) -> std::shared_ptr<Road> {
     auto [nearest_id, nearest_s] = AtRoad(point);
     return roads_[nearest_id];
 }
 
-auto Map::AtLane(planner::SimpPoint point) -> tuple<Lane::LaneID, double> {
+auto Map::AtLane(SimpPoint point) -> tuple<Lane::LaneID, double> {
     auto nearest_id                        = Lane::LaneID{-1, -1, -1, -1, -1};
     auto nearest_s                         = double{-1};
     auto min_distance                      = MAXFLOAT;
@@ -93,7 +93,7 @@ auto Map::AtLane(planner::SimpPoint point) -> tuple<Lane::LaneID, double> {
     return make_tuple(nearest_id, nearest_s);
 }
 
-auto Map::AtLanePtr(planner::SimpPoint point) -> std::shared_ptr<Lane> {
+auto Map::AtLanePtr(SimpPoint point) -> std::shared_ptr<Lane> {
     auto [nearest_id, nearest_s] = AtLane(point);
     return lanes_[nearest_id];
 }

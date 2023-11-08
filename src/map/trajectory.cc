@@ -36,12 +36,12 @@ auto Trajectory::GetValue(SAMPLE_TYPE sample_type, double s) -> double {
     return segments_[ii].GetValue(sample_type, ss);
 }
 
-auto Trajectory::GetPoint(double s) -> planner::Point {
+auto Trajectory::GetPoint(double s) -> Point {
     auto x = GetValue(SAMPLE_TYPE::X, s);
     auto y = GetValue(SAMPLE_TYPE::Y, s);
     auto t = GetValue(SAMPLE_TYPE::T, s);
     auto c = GetValue(SAMPLE_TYPE::C, s);
-    return planner::Point{x, y, t, c};
+    return Point{x, y, t, c};
 }
 
 auto Trajectory::Sample(SAMPLE_TYPE sample_type, double waypoint_interval) -> vector<double> {
@@ -63,16 +63,16 @@ auto Trajectory::SampleAll(double waypoint_interval)
     return make_tuple(x, y, t, c);
 }
 
-auto Trajectory::SampleTraj(double waypoint_interval) -> vector<planner::Point> {
+auto Trajectory::SampleTraj(double waypoint_interval) -> vector<Point> {
     auto [x, y, t, c] = SampleAll(waypoint_interval);
-    auto result       = vector<planner::Point>{};
-    for (int i = 0; i != x.size(); i++) result.emplace_back(planner::Point{x[i], y[i], t[i], c[i]});
+    auto result       = vector<Point>{};
+    for (int i = 0; i != x.size(); i++) result.emplace_back(Point{x[i], y[i], t[i], c[i]});
     return result;
 }
 
-auto Trajectory::NearestWith(planner::SimpPoint point) -> tuple<double, double> {
+auto Trajectory::NearestWith(SimpPoint point) -> tuple<double, double> {
     auto curv = [this](double s) { return make_tuple(GetValue(SAMPLE_TYPE::X, s), GetValue(SAMPLE_TYPE::Y, s)); };
-    return planner::find_closest_point_on_curve(curv, point.x, point.y, 0, length_);
+    return find_closest_point_on_curve(curv, point.x, point.y, 0, length_);
 }
 
 } // namespace hdmap

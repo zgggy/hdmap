@@ -6,8 +6,6 @@
 
 namespace hdmap {
 
-using planner::Point;
-
 class PathNode : public Lane {
     friend class DynamicNodeDijkstra;
     friend class TopoGraph;
@@ -46,8 +44,8 @@ class TopoGraph {
     void CutGroup(int road_id, int section_num, int group, std::initializer_list<double> unit_list);
     void Print();
     // auto GetRefTraj(Lane::LaneID lane_id, double s, double length, double waypoint_interval) -> vector<Point>;
-    auto AtNode(int at_road, planner::Point point) -> tuple<Lane::LaneID, double>;
-    auto AtNode(Lane::LaneID last_at_node, planner::Point point) -> tuple<Lane::LaneID, double>;
+    auto AtNode(int at_road, Point point) -> tuple<Lane::LaneID, double>;
+    auto AtNode(Lane::LaneID last_at_node, Point point) -> tuple<Lane::LaneID, double>;
 };
 
 } // namespace hdmap

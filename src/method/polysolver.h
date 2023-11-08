@@ -11,7 +11,7 @@ using std::tuple, std::make_tuple;
 using std::vector;
 using PolyPara = tuple<double, double, double, double, double, double>;
 
-namespace planner {
+namespace hdmap {
 static auto solve_poly_5(double start_s, double start_l, double start_dl, double start_ddl, double end_s, double end_l,
                          double end_dl, double end_ddl) -> PolyPara {
     Eigen::MatrixXd A(6, 6);

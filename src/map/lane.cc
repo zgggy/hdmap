@@ -3,20 +3,20 @@
 namespace hdmap {
 
 auto BaseLane::L(double s) -> double {
-    return planner::poly_5(parameters_, s, 0);
+    return poly_5(parameters_, s, 0);
 }
 auto BaseLane::dL(double s) -> double {
-    return planner::poly_5(parameters_, s, 1);
+    return poly_5(parameters_, s, 1);
 }
 auto BaseLane::ddL(double s) -> double {
-    return planner::poly_5(parameters_, s, 2);
+    return poly_5(parameters_, s, 2);
 }
 
 auto BaseLane::RoadLength() -> double {
     return end_s_ - start_s_;
 }
 
-auto BaseLane::GetPoint(double s) -> planner::Point {
+auto BaseLane::GetPoint(double s) -> Point {
     auto p  = road_->ref_traj_.GetPoint(s);
     auto l  = L(s);
     auto x2 = p.x + cos(p.theta() + M_PI / 2) * l;
@@ -24,14 +24,14 @@ auto BaseLane::GetPoint(double s) -> planner::Point {
     auto c2 = p.c == 0 ? 0 : 1 / (1 / p.c - l);
 
     // std::cout<< l << " " << x2 << " " << y2 << std::endl;
-    return planner::Point{x2, y2, p.theta() /* TODO 刘旅帆公式 */, c2};
+    return Point{x2, y2, p.theta() /* TODO 刘旅帆公式 */, c2};
 }
 
-auto BaseLane::Start() -> planner::Point {
+auto BaseLane::Start() -> Point {
     return GetPoint(start_s_);
 }
 
-auto BaseLane::End() -> planner::Point {
+auto BaseLane::End() -> Point {
     return GetPoint(end_s_);
 }
 
@@ -50,16 +50,16 @@ auto BaseLane::SampleAll(double waypoint_interval)
     return make_tuple(xx, yy, tt, cc);
 }
 
-auto BaseLane::SampleTraj(double waypoint_interval) -> vector<planner::Point> {
+auto BaseLane::SampleTraj(double waypoint_interval) -> vector<Point> {
     auto [x, y, t, c] = SampleAll(waypoint_interval);
-    auto result       = vector<planner::Point>{};
+    auto result       = vector<Point>{};
     for (int i = 0; i != x.size(); i++) {
-        result.emplace_back(planner::Point{x[i], y[i], t[i], c[i]});
+        result.emplace_back(Point{x[i], y[i], t[i], c[i]});
     }
     return result;
 }
 
-auto BaseLane::NearestWith(planner::SimpPoint point) -> tuple<double, double> {}
+auto BaseLane::NearestWith(SimpPoint point) -> tuple<double, double> {}
 
 auto Lane::LaneID::Str() -> std::string {
     return std::to_string(road) + std::to_string(section) + std::to_string(group) + std::to_string(lane) +
@@ -130,7 +130,7 @@ Lane::Lane(std::shared_ptr<Map> map, std::shared_ptr<Road> road, int section_num
     start_s_     = section.first;
     end_s_       = section.second;
     if (parameter_type == Lane::PARAMETER_TYPE::SE)
-        parameters_ = planner::solve_poly_5(start_s_, end_s_, parameters);
+        parameters_ = solve_poly_5(start_s_, end_s_, parameters);
     else
         parameters_ = parameters;
 }
@@ -159,7 +159,7 @@ Solid::Solid(std::shared_ptr<Map> map, std::shared_ptr<Road> road, int section_n
     start_s_     = section.first;
     end_s_       = section.second;
     if (parameter_type == Lane::PARAMETER_TYPE::SE)
-        parameters_ = planner::solve_poly_5(start_s_, end_s_, parameters);
+        parameters_ = solve_poly_5(start_s_, end_s_, parameters);
     else if (parameter_type == Lane::PARAMETER_TYPE::AB)
         parameters_ = parameters;
 }

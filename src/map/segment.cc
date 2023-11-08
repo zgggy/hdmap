@@ -2,26 +2,25 @@
 
 namespace hdmap {
 
-Segment::Segment(int type, planner::Point start, planner::Point end) : start_(start), end_(end), type_(type) {
+Segment::Segment(int type, Point start, Point end) : start_(start), end_(end), type_(type) {
     if (type_ == Segment::SEGMENT_TYPE::LINE) {
         length_       = sqrt(pow(end_.y - start_.y, 2) + pow(end_.x - start_.x, 2));
         start_.theta_ = atan2(end_.y - start_.y, end_.x - start_.x);
         end_.theta_   = start_.theta();
         start_.c      = 0;
         end_.c        = 0;
-        std::cout<< "LINE  " << length_ << std::endl;
-    }
-    else if (type_ == Segment::SEGMENT_TYPE::CLOTHOID) {
+        std::cout << "LINE  " << length_ << std::endl;
+    } else if (type_ == Segment::SEGMENT_TYPE::CLOTHOID) {
         g2_.build(start_.x, start_.y, start_.theta(), start_.c, end_.x, end_.y, end_.theta(), end_.c);
         length_ = g2_.totalLength();
-        std::cout<< "CLOTHOID   " << length_ << std::endl;
+        std::cout << "CLOTHOID   " << length_ << std::endl;
     }
 }
 
-Segment::Segment(planner::Point start, double dk, double s) : start_(start) {
+Segment::Segment(Point start, double dk, double s) : start_(start) {
     spiral_.build(start.x, start.y, start.theta(), start.c, dk, s);
     length_ = spiral_.length();
-    end_    = planner::Point(spiral_.xEnd(), spiral_.yEnd(), spiral_.thetaEnd(), spiral_.kappaEnd());
+    end_    = Point(spiral_.xEnd(), spiral_.yEnd(), spiral_.thetaEnd(), spiral_.kappaEnd());
     if (start.c == 0.0 && dk == 0.0) {
         type_ = LINE;
     } else {
@@ -30,7 +29,7 @@ Segment::Segment(planner::Point start, double dk, double s) : start_(start) {
 }
 
 auto Segment::Length() -> double {
-    std::cout<< "Segment length_: " << length_ << std::endl;
+    std::cout << "Segment length_: " << length_ << std::endl;
     return length_;
 }
 
@@ -45,7 +44,7 @@ auto Segment::GetValue(SAMPLE_TYPE sample_type, double s) -> double {
         else if (sample_type == SAMPLE_TYPE::C)
             return 0;
         else {
-            std::cout<< "No such SAMPLE_TYPE as [" << sample_type << "]" << std::endl;
+            std::cout << "No such SAMPLE_TYPE as [" << sample_type << "]" << std::endl;
             return MAXFLOAT;
         }
     else if (type_ == Segment::SEGMENT_TYPE::CLOTHOID)
@@ -58,19 +57,19 @@ auto Segment::GetValue(SAMPLE_TYPE sample_type, double s) -> double {
         else if (sample_type == SAMPLE_TYPE::C)
             return g2_.theta_D(s);
         else {
-            std::cout<< "No such SAMPLE_TYPE as [" << sample_type << "]" << std::endl;
+            std::cout << "No such SAMPLE_TYPE as [" << sample_type << "]" << std::endl;
             return MAXFLOAT;
         }
     else
         return MAXFLOAT;
 }
 
-auto Segment::GetPoint(double s) -> planner::Point {
+auto Segment::GetPoint(double s) -> Point {
     auto x = GetValue(SAMPLE_TYPE::X, s);
     auto y = GetValue(SAMPLE_TYPE::Y, s);
     auto t = GetValue(SAMPLE_TYPE::T, s);
     auto c = GetValue(SAMPLE_TYPE::C, s);
-    return planner::Point{x, y, t, c};
+    return Point{x, y, t, c};
 }
 
 auto Segment::Sample(SAMPLE_TYPE sample_type, double waypoint_interval) -> vector<double> {
@@ -92,10 +91,12 @@ auto Segment::SampleAll(double waypoint_interval)
     return make_tuple(x, y, t, c);
 }
 
-auto Segment::SampleTraj(double waypoint_interval) -> vector<planner::Point> {
+auto Segment::SampleTraj(double waypoint_interval) -> vector<Point> {
     auto [x, y, t, c] = SampleAll(waypoint_interval);
-    auto result       = vector<planner::Point>{};
-    for (int i = 0; i != x.size(); i++) { result.emplace_back(planner::Point{x[i], y[i], t[i], c[i]}); }
+    auto result       = vector<Point>{};
+    for (int i = 0; i != x.size(); i++) {
+        result.emplace_back(Point{x[i], y[i], t[i], c[i]});
+    }
     return result;
 }
 

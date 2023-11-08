@@ -9,7 +9,7 @@
 
 using std::min, std::max;
 using std::tuple, std::make_tuple;
-namespace planner {
+namespace hdmap {
 
 /** 曲线函数要用lambda函数，示例：
  * auto curve = [](double s) {
@@ -109,6 +109,6 @@ auto find_nearest_and_check(const auto& traj, double x, double y, int jump_num) 
     return make_tuple(is_correct, nearest_id);
 }
 
-} // namespace planner
+} // namespace hdmap
 
 #endif // __NEAREST__

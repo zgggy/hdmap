@@ -7,7 +7,7 @@
 
 const double EPSILON = 1e-6;
 
-namespace planner {
+namespace hdmap {
 class Vec2D {
   public:
     double x, y;
@@ -93,5 +93,5 @@ class WayPoint : public Point {
     WayPoint(double x, double y, double theta, double c, double v, double t) : Point(x, y, theta, c, v), t(t) {}
 };
 
-} // namespace planner
+} // namespace hdmap
 #endif // __VEC2D__

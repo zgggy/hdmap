@@ -37,21 +37,21 @@ class Segment {
         CLOTHOID = 2,
     };
     int                  type_;
-    planner::Point       start_;
-    planner::Point       end_;
+    Point                start_;
+    Point                end_;
     double               length_;
     G2lib::G2solve3arc   g2_;
     G2lib::ClothoidCurve spiral_;
 
   public:
-    Segment(int type, planner::Point start, planner::Point end);
-    Segment(planner::Point start, double dk, double s);
+    Segment(int type, Point start, Point end);
+    Segment(Point start, double dk, double s);
     auto Length() -> double;
     auto GetValue(SAMPLE_TYPE sample_type, double s) -> double;
-    auto GetPoint(double s) -> planner::Point;
+    auto GetPoint(double s) -> Point;
     auto Sample(SAMPLE_TYPE sample_type, double waypoint_interval) -> vector<double>;
     auto SampleAll(double waypoint_interval) -> tuple<vector<double>, vector<double>, vector<double>, vector<double>>;
-    auto SampleTraj(double waypoint_interval) -> vector<planner::Point>;
+    auto SampleTraj(double waypoint_interval) -> vector<Point>;
 };
 
 class Trajectory {
@@ -67,11 +67,11 @@ class Trajectory {
     auto Cat(const Trajectory& trajectory) -> void;
     auto Length() -> double;
     auto GetValue(SAMPLE_TYPE sample_type, double s) -> double;
-    auto GetPoint(double s) -> planner::Point;
+    auto GetPoint(double s) -> Point;
     auto Sample(SAMPLE_TYPE sample_type, double waypoint_interval) -> vector<double>;
     auto SampleAll(double waypoint_interval) -> tuple<vector<double>, vector<double>, vector<double>, vector<double>>;
-    auto SampleTraj(double waypoint_interval) -> vector<planner::Point>;
-    auto NearestWith(planner::SimpPoint point) -> tuple<double, double>;
+    auto SampleTraj(double waypoint_interval) -> vector<Point>;
+    auto NearestWith(SimpPoint point) -> tuple<double, double>;
 };
 
 class BaseLane : public std::enable_shared_from_this<BaseLane> {
@@ -94,12 +94,12 @@ class BaseLane : public std::enable_shared_from_this<BaseLane> {
     auto dL(double s) -> double;
     auto ddL(double s) -> double;
     auto RoadLength() -> double;
-    auto GetPoint(double s) -> planner::Point;
-    auto Start() -> planner::Point;
-    auto End() -> planner::Point;
+    auto GetPoint(double s) -> Point;
+    auto Start() -> Point;
+    auto End() -> Point;
     auto SampleAll(double waypoint_interval) -> tuple<vector<double>, vector<double>, vector<double>, vector<double>>;
-    auto SampleTraj(double waypoint_interval) -> vector<planner::Point>;
-    auto NearestWith(planner::SimpPoint point) -> tuple<double, double>;
+    auto SampleTraj(double waypoint_interval) -> vector<Point>;
+    auto NearestWith(SimpPoint point) -> tuple<double, double>;
 };
 
 class Lane : public BaseLane {
@@ -189,11 +189,11 @@ class Map : public std::enable_shared_from_this<Map> {
     void AddLane(int road_id, int section_num, int group_num, std::initializer_list<double> parameters, int param_type);
     void AddSolid(int road_id, int section_num, double mid_group, std::initializer_list<double> parameters,
                   int param_type);
-    auto AtRoad(planner::SimpPoint point) -> tuple<int, double>;
-    auto AtRoadPtr(planner::SimpPoint point) -> std::shared_ptr<Road>;
-    auto AtRoutingRoad(planner::SimpPoint point, vector<int> road_id_set) -> tuple<int, double>;
-    auto AtLane(planner::SimpPoint point) -> tuple<Lane::LaneID, double>;
-    auto AtLanePtr(planner::SimpPoint point) -> std::shared_ptr<Lane>;
+    auto AtRoad(SimpPoint point) -> tuple<int, double>;
+    auto AtRoadPtr(SimpPoint point) -> std::shared_ptr<Road>;
+    auto AtRoutingRoad(SimpPoint point, vector<int> road_id_set) -> tuple<int, double>;
+    auto AtLane(SimpPoint point) -> tuple<Lane::LaneID, double>;
+    auto AtLanePtr(SimpPoint point) -> std::shared_ptr<Lane>;
     auto AtLanesByS(int road_id, double s) -> vector<std::shared_ptr<Lane>>;
 };
 

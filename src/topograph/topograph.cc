@@ -104,7 +104,7 @@ void TopoGraph::Print() {
 //     }
 // }
 
-auto TopoGraph::AtNode(int at_road, planner::Point point) -> tuple<Lane::LaneID, double> {
+auto TopoGraph::AtNode(int at_road, Point point) -> tuple<Lane::LaneID, double> {
     auto neareast_id  = Lane::LaneID{-1, -1, -1, -1, -1};
     auto neareast_s   = double{-1};
     auto min_distance = MAXFLOAT;
@@ -122,7 +122,7 @@ auto TopoGraph::AtNode(int at_road, planner::Point point) -> tuple<Lane::LaneID,
     return make_tuple(neareast_id, neareast_s);
 }
 
-auto TopoGraph::AtNode(Lane::LaneID last_at_node, planner::Point point) -> tuple<Lane::LaneID, double> {
+auto TopoGraph::AtNode(Lane::LaneID last_at_node, Point point) -> tuple<Lane::LaneID, double> {
     auto link = [this](Lane::LaneID node1id, Lane::LaneID node2id) {
         for (auto& sucnodeid : nodes_[node1id]->successors_) { // 后继
             if (sucnodeid == node2id) return true;
