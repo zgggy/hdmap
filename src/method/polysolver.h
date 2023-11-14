@@ -1,11 +1,11 @@
-#ifndef __POLYSOVER__
-#define __POLYSOVER__
+#ifndef __HDMAP_POLYSOVER__
+#define __HDMAP_POLYSOVER__
 
 #include <Eigen/Dense>
 #include <cmath>
+#include <iostream>
 #include <tuple>
 #include <vector>
-
 
 using std::tuple, std::make_tuple;
 using std::vector;
@@ -54,5 +54,5 @@ static auto poly_5(PolyPara parameters, double s, int order) -> double {
             return 0.0; // 阶数不在0至5范围内，返回默认值
     }
 }
-} // namespace planner
-#endif // __POLYSOVER__
+} // namespace hdmap
+#endif // __HDMAP_POLYSOVER__
