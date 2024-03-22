@@ -6,17 +6,33 @@ auto Trajectory::Update(vector<Segment> segments) -> void {
     segments_ = segments;
     length_   = 0.0;
     for (auto seg : segments_) length_ += seg.Length();
+    sections_ = {std::make_pair(0, length_)};
 }
 
 auto Trajectory::Update(Segment segment) -> void {
-    segments_.emplace_back(segment);
-    length_ += segment.Length();
-    std::cout << "segment.Length() " << segment.Length() << std::endl;
-    std::cout << "Traj Update length: " << length_ << std::endl;
+    if (segment.type_ == Segment::SEGMENT_TYPE::LINE) {
+        segments_.emplace_back(segment);
+        length_ += segment.Length();
+    } else if (segment.type_ == Segment::SEGMENT_TYPE::CLOTHOID)
+        Update(segment.To3Segment());
+    else
+        std::cout << "segment type error: " << segment.type_ << std::endl;
+    sections_ = {std::make_pair(0, length_)};
 }
 
 auto Trajectory::Cat(const Trajectory& trajectory) -> void {
     for (auto seg : trajectory.segments_) Update(seg);
+}
+
+
+auto Trajectory::Cut(std::initializer_list<double> sec_list) -> void {
+    sections_.clear();
+    auto segs = vector<double>{sec_list};
+    sections_.emplace_back(std::make_pair(0, segs[0]));
+    for (int i = 0; i != segs.size() - 1; ++i) {
+        sections_.emplace_back(std::make_pair(segs[i], segs[i + 1]));
+    }
+    sections_.emplace_back(std::make_pair(segs.back(), length_));
 }
 
 auto Trajectory::Length() -> double {

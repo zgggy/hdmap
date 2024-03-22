@@ -2,18 +2,16 @@
 
 namespace hdmap {
 
-Segment::Segment(int type, Point start, Point end) : start_(start), end_(end), type_(type) {
+Segment::Segment(SEGMENT_TYPE type, Point start, Point end) : start_(start), end_(end), type_(type) {
     if (type_ == Segment::SEGMENT_TYPE::LINE) {
         length_       = sqrt(pow(end_.y - start_.y, 2) + pow(end_.x - start_.x, 2));
         start_.theta_ = atan2(end_.y - start_.y, end_.x - start_.x);
         end_.theta_   = start_.theta();
         start_.c      = 0;
         end_.c        = 0;
-        std::cout << "LINE  " << length_ << std::endl;
     } else if (type_ == Segment::SEGMENT_TYPE::CLOTHOID) {
         g2_.build(start_.x, start_.y, start_.theta(), start_.c, end_.x, end_.y, end_.theta(), end_.c);
         length_ = g2_.totalLength();
-        std::cout << "CLOTHOID   " << length_ << std::endl;
     }
 }
 
@@ -26,6 +24,19 @@ Segment::Segment(Point start, double dk, double s) : start_(start) {
     } else {
         type_ = CLOTHOID;
     }
+}
+
+auto Segment::To3Segment() -> std::vector<Segment> {
+    auto s1 =
+        Segment(Point{g2_.getS0().xBegin(), g2_.getS0().yBegin(), g2_.getS0().thetaBegin(), g2_.getS0().kappaBegin()},
+                g2_.getS0().dkappa(), g2_.getS0().length());
+    auto s2 =
+        Segment(Point{g2_.getSM().xBegin(), g2_.getSM().yBegin(), g2_.getSM().thetaBegin(), g2_.getSM().kappaBegin()},
+                g2_.getSM().dkappa(), g2_.getSM().length());
+    auto s3 =
+        Segment(Point{g2_.getS1().xBegin(), g2_.getS1().yBegin(), g2_.getS1().thetaBegin(), g2_.getS1().kappaBegin()},
+                g2_.getS1().dkappa(), g2_.getS1().length());
+    return {s1, s2, s3};
 }
 
 auto Segment::Length() -> double {

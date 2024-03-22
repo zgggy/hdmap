@@ -19,10 +19,9 @@ include_directories(
 )
 
 add_library(${HDMAP_LIB_NAME}
-    src/map/boundary.cc 
     src/map/lane.cc 
     src/map/map.cc 
-    src/map/road.cc 
+    src/map/area.cc 
     src/map/segment.cc
     src/map/trajectory.cc
     src/routing/astar.cc

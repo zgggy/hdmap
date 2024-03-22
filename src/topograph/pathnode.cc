@@ -2,13 +2,7 @@
 
 namespace hdmap {
 
-PathNode::PathNode(std::shared_ptr<Lane> lane) {
-    map_          = lane->map_;
-    road_         = lane->road_;
-    start_s_      = lane->start_s_;
-    end_s_        = lane->end_s_;
-    parameters_   = lane->parameters_;
-    id_           = lane->id_;
+PathNode::PathNode(const Lane& lane) : Lane(lane) {
     father_       = nullptr;
     cost_         = MAXFLOAT;
     closed_       = false;

@@ -7,12 +7,13 @@ TopoGraph::TopoGraph(std::shared_ptr<hdmap::Map> map) {
     origin_map_ = map;
     start_node_ = nullptr;
     end_node_   = nullptr;
-    for (auto& item : origin_map_->lanes_) {
-        std::cout << item.first.road << item.first.section << item.first.group << item.first.lane << std::endl;
-        std::cout << "START S: " << item.second->start_s_ << " " << item.second->end_s_ << std::endl;
-        auto node = std::make_shared<PathNode>(item.second);
+    for (auto& [lane_id_complate, lane] : origin_map_->lanes_) {
+        std::cout << lane_id_complate.road_id_ << lane_id_complate.traj_id_ << lane_id_complate.section_id_
+                  << lane_id_complate.group_id_ << lane_id_complate.lane_id_ << std::endl;
+        std::cout << "START S: " << lane.start_s_ << " " << lane.end_s_ << std::endl;
+        auto node = std::make_shared<PathNode>(lane);
         std::cout << "make_shared" << std::endl;
-        nodes_.emplace(node->id_, node);
+        nodes_.emplace(node->lane_id_complate(), node);
         std::cout << "emplace over~" << std::endl;
     }
     std::cout << "construct over~" << std::endl;
@@ -24,57 +25,55 @@ void TopoGraph::UpdateTopoGraph() {
         node.second->predecessors_.clear();
         node.second->sidecessors_.clear();
     }
-    for (auto& node1 : nodes_) {
-        auto l = node1.second;
-        for (auto& node2 : nodes_) {
-            auto l2 = node2.second;
-            if (l->id_ != l2->id_)
-                if (l->End() == l2->Start()) {
-                    l->successors_.emplace_back(l2->id_);
-                    l2->predecessors_.emplace_back(l->id_);
-                } else if (l->id_.road == l2->id_.road and l->id_.section == l2->id_.section and
-                           l->id_.group == l2->id_.group and l->id_.unit == l2->id_.unit and
-                           abs(l->id_.lane - l2->id_.lane) == 1)
-                    l->sidecessors_.emplace_back(l2->id_);
-        }
-    }
+    for (auto& [_, node1] : nodes_)
+        for (auto& [_, node2] : nodes_)
+            if (node1->lane_id_complate() != node2->lane_id_complate())
+                if (node1->End() == node2->Start()) {
+                    node1->successors_.emplace_back(node2->lane_id_complate());
+                    node2->predecessors_.emplace_back(node1->lane_id_complate());
+                } else if (node1->road_id_ == node2->road_id_ and node1->traj_id_ == node2->traj_id_ and
+                           node1->section_id_ == node2->section_id_ and node1->group_id_ == node2->group_id_ and
+                           node1->unit_id_ == node2->unit_id_ and abs(node1->lane_id_ - node2->lane_id_) == 1)
+                    node1->sidecessors_.emplace_back(node2->lane_id_complate());
 }
 
 void TopoGraph::SetStartAndEndNode(Lane::LaneID start_id, double start_s, Lane::LaneID end_id, double end_s) {
     if (start_id == end_id) {
-        CutGroup(start_id.road, start_id.section, start_id.group, {fmin(start_s, end_s), fmax(start_s, end_s)});
-        start_id.unit += start_s >= end_s ? 2 : 1;
-        end_id.unit += end_s > start_s ? 1 : 0;
+        CutGroupByUnit(start_id.road_id_, start_id.traj_id_, start_id.section_id_, start_id.group_id_,
+                       {fmin(start_s, end_s), fmax(start_s, end_s)});
+        start_id.unit_id_ += start_s >= end_s ? 2 : 1;
+        end_id.unit_id_ += end_s > start_s ? 1 : 0;
         start_node_ = nodes_[start_id];
     } else {
-        CutGroup(start_id.road, start_id.section, start_id.group, {start_s});
-        start_id.unit += 1;
+        CutGroupByUnit(start_id.road_id_, start_id.traj_id_, start_id.section_id_, start_id.group_id_, {start_s});
+        start_id.unit_id_ += 1;
         start_node_ = nodes_[start_id];
-        CutGroup(end_id.road, end_id.section, end_id.group, {end_s});
+        CutGroupByUnit(end_id.road_id_, end_id.traj_id_, end_id.section_id_, end_id.group_id_, {end_s});
     }
     end_node_ = nodes_[end_id];
 }
 
-void TopoGraph::CutGroup(int road_id, int section_num, int group, std::initializer_list<double> unit_list) {
+void TopoGraph::CutGroupByUnit(int road_id, int traj_id, int section_id, int group_id,
+                               std::initializer_list<double> unit_list) {
     std::map<Lane::LaneID, std::shared_ptr<PathNode>> nodes;
-    for (auto& node : nodes_) {
-        if (node.first.road == road_id and node.first.section == section_num and node.first.group == group) {
-            auto new_lanes = node.second->Cut(unit_list);
+    for (auto& [node_id_complate, node] : nodes_) {
+        if (node_id_complate.road_id_ == road_id and node_id_complate.traj_id_ == traj_id and
+            node_id_complate.section_id_ == section_id and node_id_complate.group_id_ == group_id) {
+            auto new_lanes = node->Cut(unit_list);
             for (auto& l : new_lanes) {
-                auto l_pointer = std::make_shared<PathNode>(std::make_shared<Lane>(l));
-                nodes.emplace(l.id_, l_pointer);
+                auto l_pointer = std::make_shared<PathNode>(l);
+                nodes.emplace(l.lane_id_complate(), l_pointer);
             }
         } else
-            nodes.emplace(node);
+            nodes.emplace(node_id_complate, node);
     };
     nodes_ = nodes;
 }
 
 void TopoGraph::Print() {
-    for (const auto& lpair : nodes_) {
-        auto l = lpair.second;
-        std::cout << "[" << l->id_.Str() << ":" << l->start_s_ << "," << l->end_s_ << "]" << l->Start().Str() << ","
-                  << l->End().Str() << std::endl;
+    for (const auto& [_, l] : nodes_) {
+        std::cout << "[" << l->lane_id_complate().Str() << ":" << l->start_s_ << "," << l->end_s_ << "]"
+                  << l->Start().Str() << "," << l->End().Str() << std::endl;
         for (auto& p : l->predecessors_) {
             std::cout << "< " << p.Str() << nodes_[p]->Start().Str() << "," << nodes_[p]->End().Str() << std::endl;
         }
@@ -85,8 +84,8 @@ void TopoGraph::Print() {
             std::cout << "= " << d.Str() << nodes_[d]->Start().Str() << "," << nodes_[d]->End().Str() << std::endl;
         }
     }
-    std::cout << "start: " << start_node_->id_.Str() << std::endl;
-    std::cout << "end: " << end_node_->id_.Str() << std::endl;
+    std::cout << "start: " << start_node_->lane_id_complate().Str() << std::endl;
+    std::cout << "end: " << end_node_->lane_id_complate().Str() << std::endl;
 }
 
 /* TODO */
@@ -104,19 +103,16 @@ void TopoGraph::Print() {
 //     }
 // }
 
-auto TopoGraph::AtNode(int at_road, Point point) -> tuple<Lane::LaneID, double> {
+auto TopoGraph::AtNode(Point point) -> tuple<Lane::LaneID, double> {
     auto neareast_id  = Lane::LaneID{-1, -1, -1, -1, -1};
     auto neareast_s   = double{-1};
     auto min_distance = MAXFLOAT;
-    for (auto& nodeitem : nodes_) {
-        auto node = nodeitem.second;
-        if (node->id_.road == at_road) {
-            auto [s, distance] = node->NearestWith(point);
-            if (distance < min_distance) {
-                neareast_id  = node->id_;
-                neareast_s   = s;
-                min_distance = distance;
-            }
+    for (auto& [node_id_complate, node] : nodes_) {
+        auto [s, distance] = node->NearestWith(point);
+        if (distance < min_distance) {
+            neareast_id  = node_id_complate;
+            neareast_s   = s;
+            min_distance = distance;
         }
     }
     return make_tuple(neareast_id, neareast_s);
@@ -137,12 +133,11 @@ auto TopoGraph::AtNode(Lane::LaneID last_at_node, Point point) -> tuple<Lane::La
     auto neareast_id  = Lane::LaneID{-1, -1, -1, -1, -1};
     auto neareast_s   = double{-1};
     auto min_distance = MAXFLOAT;
-    for (auto& nodeitem : nodes_) {
-        if (link(last_at_node, nodeitem.first)) {
-            auto node          = nodeitem.second;
+    for (auto& [node_id_complate, node] : nodes_) {
+        if (link(last_at_node, node_id_complate)) {
             auto [s, distance] = node->NearestWith(point);
             if (distance < min_distance) {
-                neareast_id  = node->id_;
+                neareast_id  = node_id_complate;
                 neareast_s   = s;
                 min_distance = distance;
             }

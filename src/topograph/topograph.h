@@ -25,7 +25,7 @@ class PathNode : public Lane {
     vector<LaneID> predecessors_, successors_, sidecessors_;
 
   public:
-    PathNode(std::shared_ptr<Lane> lane);
+    PathNode(const Lane& lane);
     auto NearestWith(Point point) -> tuple<double, double>;
 };
 
@@ -41,10 +41,11 @@ class TopoGraph {
     TopoGraph(std::shared_ptr<hdmap::Map> origin_map);
     void SetStartAndEndNode(Lane::LaneID start_id, double start_s, Lane::LaneID end_id, double end_s);
     void UpdateTopoGraph();
-    void CutGroup(int road_id, int section_num, int group, std::initializer_list<double> unit_list);
+    void CutGroupByUnit(int road_id, int traj_id, int section_id, int group_id,
+                        std::initializer_list<double> unit_list);
     void Print();
     // auto GetRefTraj(Lane::LaneID lane_id, double s, double length, double waypoint_interval) -> vector<Point>;
-    auto AtNode(int at_road, Point point) -> tuple<Lane::LaneID, double>;
+    auto AtNode(Point point) -> tuple<Lane::LaneID, double>;
     auto AtNode(Lane::LaneID last_at_node, Point point) -> tuple<Lane::LaneID, double>;
 };
 
