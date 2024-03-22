@@ -1,5 +1,5 @@
-#ifndef __NEAREST__
-#define __NEAREST__
+#ifndef __HDMAP_NEAREST__
+#define __HDMAP_NEAREST__
 
 #include <algorithm>
 #include <cmath>
@@ -50,4 +50,4 @@ static auto find_closest_point_on_curve = [](auto curve, double x, double y, dou
 
 } // namespace hdmap
 
-#endif // __NEAREST__
+#endif // __HDMAP_NEAREST__

@@ -1,5 +1,5 @@
-#ifndef __VEC2D__
-#define __VEC2D__
+#ifndef __HDMAP_VEC2D__
+#define __HDMAP_VEC2D__
 
 #include <cmath>
 #include <string>
@@ -124,4 +124,4 @@ class WayPoint : public Point {
 };
 
 } // namespace hdmap
-#endif // __VEC2D__
+#endif // __HDMAP_VEC2D__
