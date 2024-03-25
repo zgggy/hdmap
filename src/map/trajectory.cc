@@ -6,11 +6,6 @@ auto Trajectory::Update(vector<Segment> segments) -> void {
     segments_.insert(segments_.end(), segments.begin(), segments.end());
     for (auto seg : segments) length_ += seg.Length();
     sections_ = {std::make_pair(0, length_)};
-
-    // segments_ = segments;
-    // length_   = 0.0;
-    // for (auto seg : segments_) length_ += seg.Length();
-    // sections_ = {std::make_pair(0, length_)};
 }
 
 auto Trajectory::Update(Segment segment) -> void {
@@ -46,9 +41,7 @@ auto Trajectory::Length() -> double {
 auto Trajectory::GetValue(SAMPLE_TYPE sample_type, double s) -> double {
     auto ii = int{0};
     auto ss = s;
-    // std::cout << "get value: " << ss << std::endl;
     for (int i = 0; i != segments_.size(); i++) {
-        // std::cout << "ss: " << ss << " len: " << segments_[i].length_ << std::endl;
         if (ss > segments_[i].length_ and i < segments_.size() - 1)
             ss -= segments_[i].length_;
         else {
@@ -56,7 +49,6 @@ auto Trajectory::GetValue(SAMPLE_TYPE sample_type, double s) -> double {
             break;
         }
     }
-    // std::cout << "type: " << sample_type << " ii: " << ii << " ss: " << ss << std::endl;
     return segments_[ii].GetValue(sample_type, ss);
 }
 

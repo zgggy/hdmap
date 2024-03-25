@@ -29,12 +29,13 @@ auto BaseLane::RoadLength() -> double {
 }
 
 auto BaseLane::GetPoint(double s) -> Point {
-    auto p  = map_->roads_.at(road_id_).ref_trajs_.at(traj_id_).GetPoint(s);
-    auto l  = L(s);
-    auto x2 = p.x + cos(p.theta() + M_PI / 2) * l;
-    auto y2 = p.y + sin(p.theta() + M_PI / 2) * l;
-    auto c2 = p.c == 0 ? 0 : 1 / (1 / p.c - l);
-    return Point{x2, y2, p.theta() /* TODO theta 是有变化的 */, c2};
+    auto p      = map_->roads_.at(road_id_).ref_trajs_.at(traj_id_).GetPoint(s);
+    auto l      = L(s);
+    auto x2     = p.x + cos(p.theta() + M_PI / 2) * l;
+    auto y2     = p.y + sin(p.theta() + M_PI / 2) * l;
+    auto theta2 = p.theta() + atan(dL(s) / (1 - p.c * l));
+    auto c2     = p.c == 0 ? 0 : 1 / (1 / p.c - l);
+    return Point{x2, y2, theta2, c2 /* 变化忽略不计了公式有点繁琐反正要重新算 */};
 }
 
 auto BaseLane::Start() -> Point {
