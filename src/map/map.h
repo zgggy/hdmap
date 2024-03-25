@@ -34,6 +34,7 @@ class Segment {
     enum SEGMENT_TYPE {
         LINE     = 1,
         CLOTHOID = 2,
+        SPIRAL   = 3,
     };
     SEGMENT_TYPE         type_;
     Point                start_;
@@ -171,8 +172,8 @@ class Lane : public BaseLane {
         int  lane_id_;
         int  unit_id_;
         auto Str() const -> std::string {
-            return std::to_string(road_id_) + std::to_string(section_id_) + std::to_string(group_id_) +
-                   std::to_string(lane_id_) + std::to_string(unit_id_);
+            return std::to_string(road_id_) + std::to_string(traj_id_) + std::to_string(section_id_) +
+                   std::to_string(group_id_) + std::to_string(lane_id_) + std::to_string(unit_id_);
         }
         auto Num() const -> int {
             return road_id_ * 1e6 + traj_id_ * 1e5 + section_id_ * 1e4 + group_id_ * 1e3 + lane_id_ * 1e2 + unit_id_;

@@ -3,6 +3,7 @@
 namespace hdmap {
 
 PathNode::PathNode(const Lane& lane) : Lane(lane) {
+    std::cout << "construct lane id: " << lane_id_complate().Str() << std::endl;
     father_       = nullptr;
     cost_         = MAXFLOAT;
     closed_       = false;
@@ -11,12 +12,8 @@ PathNode::PathNode(const Lane& lane) : Lane(lane) {
     predecessors_.clear();
     successors_.clear();
     sidecessors_.clear();
-    std::cout << "start: " << GetPoint(start_s_).Str() << std::endl;
-    std::cout << "end  : " << GetPoint(end_s_).Str() << std::endl;
-    std::cout << start_s_ << " " << end_s_ << std::endl;
-    auto [a, b] = NearestWith(GetPoint(start_s_));
-    std::cout << "near : " << GetPoint(a).Str() << std::endl;
-    std::cout << start_s_ << "," << end_s_ << "," << a << "," << b << std::endl;
+    std::cout << "start s: " << start_s_ << " " << GetPoint(start_s_).Str() << std::endl;
+    std::cout << "end s: " << end_s_ << " " << GetPoint(end_s_).Str() << std::endl;
 }
 
 auto PathNode::NearestWith(Point point) -> tuple<double, double> {

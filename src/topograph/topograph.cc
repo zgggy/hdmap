@@ -62,10 +62,10 @@ void TopoGraph::CutGroupByUnit(int road_id, int traj_id, int section_id, int gro
             auto new_lanes = node->Cut(unit_list);
             for (auto& l : new_lanes) {
                 auto l_pointer = std::make_shared<PathNode>(l);
-                nodes.emplace(l.lane_id_complate(), l_pointer);
+                nodes.insert_or_assign(l.lane_id_complate(), l_pointer);
             }
         } else
-            nodes.emplace(node_id_complate, node);
+            nodes.insert_or_assign(node_id_complate, node);
     };
     nodes_ = nodes;
 }

@@ -93,7 +93,7 @@ auto Lane::Cut(std::initializer_list<double> unit_list) -> std::vector<Lane> {
     for (int i = 0; i != units.size() - 1; ++i) {
         auto lane =
             Lane(map_, road_id_, traj_id_, section_id_, group_id_, lane_id_, parameters_, Lane::PARAMETER_TYPE::AB);
-        unit_id_      = i;
+        lane.unit_id_ = i;
         lane.start_s_ = units[i];
         lane.end_s_   = units[i + 1];
         lanes.emplace_back(lane);

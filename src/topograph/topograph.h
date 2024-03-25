@@ -44,7 +44,6 @@ class TopoGraph {
     void CutGroupByUnit(int road_id, int traj_id, int section_id, int group_id,
                         std::initializer_list<double> unit_list);
     void Print();
-    // auto GetRefTraj(Lane::LaneID lane_id, double s, double length, double waypoint_interval) -> vector<Point>;
     auto AtNode(Point point) -> tuple<Lane::LaneID, double>;
     auto AtNode(Lane::LaneID last_at_node, Point point) -> tuple<Lane::LaneID, double>;
 };

@@ -18,11 +18,12 @@ Segment::Segment(SEGMENT_TYPE type, Point start, Point end) : start_(start), end
 Segment::Segment(Point start, double dk, double s) : start_(start) {
     spiral_.build(start.x, start.y, start.theta(), start.c, dk, s);
     length_ = spiral_.length();
-    end_    = Point(spiral_.xEnd(), spiral_.yEnd(), spiral_.thetaEnd(), spiral_.kappaEnd());
-    if (start.c == 0.0 && dk == 0.0) {
+    assert(fabs(length_ - s) <= 1e-5);
+    end_ = Point(spiral_.xEnd(), spiral_.yEnd(), spiral_.thetaEnd(), spiral_.kappaEnd());
+    if (start.c == 0.0 and dk == 0.0) {
         type_ = LINE;
     } else {
-        type_ = CLOTHOID;
+        type_ = SPIRAL;
     }
 }
 
@@ -36,6 +37,13 @@ auto Segment::To3Segment() -> std::vector<Segment> {
     auto s3 =
         Segment(Point{g2_.getS1().xBegin(), g2_.getS1().yBegin(), g2_.getS1().thetaBegin(), g2_.getS1().kappaBegin()},
                 g2_.getS1().dkappa(), g2_.getS1().length());
+
+    // std::cout << g2_.getS0().xBegin() << " " << g2_.getS0().yBegin() << " " << g2_.getS0().thetaBegin() << " "
+    //           << g2_.getS0().kappaBegin() << " " << g2_.getS0().dkappa() << " " << g2_.getS0().length() << std::endl;
+    // std::cout << g2_.getSM().xBegin() << " " << g2_.getSM().yBegin() << " " << g2_.getSM().thetaBegin() << " "
+    //           << g2_.getSM().kappaBegin() << " " << g2_.getSM().dkappa() << " " << g2_.getSM().length() << std::endl;
+    // std::cout << g2_.getS1().xBegin() << " " << g2_.getS1().yBegin() << " " << g2_.getS1().thetaBegin() << " "
+    //           << g2_.getS1().kappaBegin() << " " << g2_.getS1().dkappa() << " " << g2_.getS1().length() << std::endl;
     return {s1, s2, s3};
 }
 
@@ -71,7 +79,23 @@ auto Segment::GetValue(SAMPLE_TYPE sample_type, double s) -> double {
             std::cout << "No such SAMPLE_TYPE as [" << sample_type << "]" << std::endl;
             return MAXFLOAT;
         }
-    else
+    else if (type_ == Segment::SEGMENT_TYPE::SPIRAL) {
+        // std::cout << "spiral: " << s << " | " << spiral_.X(s) << " " << spiral_.Y(s) << " " << spiral_.theta(s) << "
+        // "
+        //           << spiral_.theta_D(s) << std::endl;
+        if (sample_type == SAMPLE_TYPE::X)
+            return spiral_.X(s);
+        else if (sample_type == SAMPLE_TYPE::Y)
+            return spiral_.Y(s);
+        else if (sample_type == SAMPLE_TYPE::T)
+            return spiral_.theta(s);
+        else if (sample_type == SAMPLE_TYPE::C)
+            return spiral_.theta_D(s);
+        else {
+            std::cout << "No such SAMPLE_TYPE as [" << sample_type << "]" << std::endl;
+            return MAXFLOAT;
+        }
+    } else
         return MAXFLOAT;
 }
 
