@@ -1,5 +1,7 @@
 # HDMAP
 
+![hdmap](doc/img/hdmap_128.png)
+
 ## CMakeLists
 
 to use this lib, write at least these 3 statements:  
