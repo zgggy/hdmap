@@ -25,7 +25,7 @@ auto Routing::Dijkstra() -> bool {
         cur_node_->closed_ = true;
         if (topo_->end_node_->closed_) return true;
         for (auto node_id : cur_node_->successors_) {
-            std::cout << cur_node_->lane_id_complate().Str() << " -> " << node_id.Str() << std::endl;
+            std::cout << cur_node_->lane_full_id().Str() << " -> " << node_id.Str() << std::endl;
             auto node = topo_->nodes_[node_id];
             std::cout << "  cur_node cost: " << cur_node_->cost_ << std::endl;
             if (not node->closed_) {
@@ -38,7 +38,7 @@ auto Routing::Dijkstra() -> bool {
             }
         }
         for (auto node_id : cur_node_->sidecessors_) {
-            std::cout << cur_node_->lane_id_complate().Str() << " -> " << node_id.Str() << std::endl;
+            std::cout << cur_node_->lane_full_id().Str() << " -> " << node_id.Str() << std::endl;
             auto node = topo_->nodes_[node_id];
             std::cout << "  cur_node cost: " << cur_node_->cost_ << std::endl;
             if (not node->closed_) {

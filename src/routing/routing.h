@@ -49,9 +49,9 @@ class Routing {
     /* get result */
     auto TraceBack() -> vector<hdmap::Lane::LaneID> {
         auto node_seq = vector<hdmap::Lane::LaneID>{};
-        node_seq.emplace_back(topo_->end_node_->lane_id_complate());
+        node_seq.emplace_back(topo_->end_node_->lane_full_id());
         while (topo_->nodes_.at(node_seq[0])->father_ != nullptr) {
-            node_seq.emplace(node_seq.begin(), topo_->nodes_.at(node_seq[0])->father_->lane_id_complate());
+            node_seq.emplace(node_seq.begin(), topo_->nodes_.at(node_seq[0])->father_->lane_full_id());
         }
         return node_seq;
     }
@@ -59,12 +59,12 @@ class Routing {
     auto GlobalRefTraj() -> Trajectory {
         auto ref_traj = Trajectory{};
         for (int i = 0; i < result_.size(); i++) {
-            auto lane_id_complate = result_[i];
+            auto lane_full_id = result_[i];
             auto cur_traj =
-                topo_->origin_map_->roads_.at(lane_id_complate.road_id_).ref_trajs_.at(lane_id_complate.traj_id_);
+                topo_->origin_map_->roads_.at(lane_full_id.road_id_).ref_trajs_.at(lane_full_id.traj_id_);
             if (i == 0)
                 ref_traj.Update(cur_traj.segments_);
-            else if (lane_id_complate.road_id_ != result_[i - 1].road_id_) {
+            else if (lane_full_id.road_id_ != result_[i - 1].road_id_) {
                 /* TODO 两个traj未连接，用clothoid连接，这是不对的 */
                 if (not ref_traj.segments_.empty() and cur_traj.GetPoint(0) != ref_traj.GetPoint(ref_traj.length_))
                     ref_traj.Update(Segment(hdmap::Segment::SEGMENT_TYPE::CLOTHOID, ref_traj.GetPoint(ref_traj.length_),
@@ -81,10 +81,10 @@ class Routing {
     }
 
     auto AtLane(int road_id, int traj_id, double s) -> hdmap::Lane::LaneID {
-        for (auto lane_id_complate : result_) {
-            auto lane = topo_->origin_map_->lanes_.at(lane_id_complate);
-            if (lane_id_complate.road_id_ == road_id and lane.start_s_ < s and lane.end_s_ > s)
-                return lane.lane_id_complate();
+        for (auto lane_full_id : result_) {
+            auto lane = topo_->origin_map_->lanes_.at(lane_full_id);
+            if (lane_full_id.road_id_ == road_id and lane.start_s_ < s and lane.end_s_ > s)
+                return lane.lane_full_id();
         }
         return hdmap::Lane::LaneID{-1, -1, -1, -1, -1, -1};
     }

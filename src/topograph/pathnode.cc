@@ -3,7 +3,7 @@
 namespace hdmap {
 
 PathNode::PathNode(const Lane& lane) : Lane(lane) {
-    std::cout << "construct lane id: " << lane_id_complate().Str() << std::endl;
+    std::cout << "construct lane id: " << lane_full_id().Str() << std::endl;
     father_       = nullptr;
     cost_         = MAXFLOAT;
     closed_       = false;

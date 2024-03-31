@@ -199,7 +199,7 @@ class Lane : public BaseLane {
     int unit_id_;
 
   public:
-    auto lane_id_complate() -> LaneID {
+    auto lane_full_id() -> LaneID {
         return LaneID{road_id_, traj_id_, section_id_, group_id_, lane_id_, unit_id_};
     }
 

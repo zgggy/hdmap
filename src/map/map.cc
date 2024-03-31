@@ -22,17 +22,17 @@ void Map::AddLane(int road_id, int traj_id, int section_id, int group_id, std::i
             lane_num++;
 
     auto lane = Lane(shared_from_this(), road_id, traj_id, section_id, group_id, lane_num, polyparas, param_type);
-    lanes_.emplace(lane.lane_id_complate(), lane);
+    lanes_.emplace(lane.lane_full_id(), lane);
 }
 
 auto Map::AtLane(SimpPoint point) -> tuple<Lane::LaneID, double> {
     auto nearest_id   = Lane::LaneID{-1, -1, -1, -1, -1, -1};
     auto nearest_s    = double{-1};
     auto min_distance = MAXFLOAT;
-    for (auto& [lane_id_complate, lane] : lanes_) {
+    for (auto& [lane_full_id, lane] : lanes_) {
         auto [s, distance] = lane.NearestWith(point);
         if (distance < min_distance) {
-            nearest_id   = lane.lane_id_complate();
+            nearest_id   = lane.lane_full_id();
             nearest_s    = s;
             min_distance = distance;
         }
